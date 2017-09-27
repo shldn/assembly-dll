@@ -62,11 +62,11 @@ namespace Assembly
             }
         }
 
-        public List<Vector3> GetPositions() {
-            List<Vector3> positions = new List<Vector3>();
+        public List<Tuple<int,Vector3>> GetPositions() {
+            List<Tuple<int, Vector3>> positions = new List<Tuple<int, Vector3>>();
             lock (transformDataLock) {
                 for (int i = 0; i < assemblies.Count; ++i) {
-                    positions.Add(assemblies[i].position);
+                    positions.Add(new Tuple<int,Vector3>(assemblies[i].id,assemblies[i].position));
                 }
             }
             return positions;
