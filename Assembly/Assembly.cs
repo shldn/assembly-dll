@@ -1,10 +1,16 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Assembly
 {
-    class Assembly
+    public class Assembly
     {
-        public Assembly(Vector3 pos) { position = pos; }
+        public static Action<Assembly> onCreation;
+        public Assembly(Vector3 pos) {
+            position = pos;
+            if (onCreation != null)
+                onCreation(this);
+        }
         public Vector3 position;
     }
 }
