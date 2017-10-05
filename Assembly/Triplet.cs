@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Numerics;
 using System;
 
 [Serializable]
@@ -14,13 +15,11 @@ public class Triplet {
 		z = _z;
 	}
 
-	/*	
 	public Triplet(Vector3 vec) {
-		x = Mathf.RoundToInt(vec.x);
-		y = Mathf.RoundToInt(vec.y);
-		z = Mathf.RoundToInt(vec.z);
+		x = (int)Math.Round(vec.X);
+		y = (int)Math.Round(vec.Y);
+		z = (int)Math.Round(vec.Z);
 	}
-	*/
 		
 	public Triplet(Triplet source) {
 		x = source.x;
@@ -143,11 +142,9 @@ public class Triplet {
 	    return (x ^ y) ^ z;
 	}
 	
-	/*
 	public Vector3 ToVector3() {
 		return new Vector3(x, y, z);
 	}
-	*/
 
     private static Triplet[] hexDirectionImpl = null;
 	public static Triplet[] hexDirection{
