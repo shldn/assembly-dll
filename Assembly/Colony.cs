@@ -18,9 +18,6 @@ namespace Assembly
         // frame rate control
         int sleepMillis = 10;
 
-        // locks
-        Object transformDataLock = new object();
-
         // helpers
         Random random = new Random();
 
@@ -41,8 +38,9 @@ namespace Assembly
 
         private Colony(int num) {
             Console.WriteLine("Creating a colony " + num);
+            int numNodes = 4;
             for (int i = 0; i < num; ++i) {
-                assemblies.Add(new Assembly(RandomPos()));
+                assemblies.Add(new Assembly(RandomPos(), numNodes));
             }
         }
 
@@ -53,21 +51,16 @@ namespace Assembly
             }
         }
 
-        // This should be internal, but exposing for now to test
-        public void Update() {
-            lock (transformDataLock) {
-                for (int i = 0; i < assemblies.Count; ++i) {
-                    assemblies[i].position += 0.001f * assemblies[i].position;
-                }
+        void Update() {
+            for (int i = 0; i < assemblies.Count; ++i) {
+                assemblies[i].Position += 0.001f * assemblies[i].Position;
             }
         }
 
         public List<Tuple<int,Vector3>> GetPositions() {
             List<Tuple<int, Vector3>> positions = new List<Tuple<int, Vector3>>();
-            lock (transformDataLock) {
-                for (int i = 0; i < assemblies.Count; ++i) {
-                    positions.Add(new Tuple<int,Vector3>(assemblies[i].id,assemblies[i].position));
-                }
+            for (int i = 0; i < assemblies.Count; ++i) {
+                positions.Add(new Tuple<int,Vector3>(assemblies[i].Id,assemblies[i].Position));
             }
             return positions;
         }

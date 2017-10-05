@@ -1,7 +1,7 @@
 ﻿
 namespace Assembly
 {
-    class Node
+    public class Node
     {
         public Node(Assembly parent, Triplet localHexPos) {
             this.assembly = parent;
