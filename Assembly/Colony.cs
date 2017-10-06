@@ -14,12 +14,10 @@ namespace Assembly
         // simulation control
         static bool killAll = false;
         bool running = true;
+        public volatile float speed = 0.001f;
 
         // frame rate control
         int sleepMillis = 10;
-
-        // helpers
-        Random random = new Random();
 
         public static Colony Create(int num) {
             // Create the new Colony
@@ -38,7 +36,7 @@ namespace Assembly
 
         private Colony(int num) {
             Console.WriteLine("Creating a colony " + num);
-            int numNodes = 3;
+            int numNodes = Random.Range(3, 8);
             for (int i = 0; i < num; ++i) {
                 assemblies.Add(new Assembly(RandomPos(), numNodes));
             }
@@ -53,7 +51,7 @@ namespace Assembly
 
         void Update() {
             for (int i = 0; i < assemblies.Count; ++i) {
-                assemblies[i].Position += Vector3.Transform(Vector3.UnitZ, assemblies[i].Rotation) * 0.001f;
+                assemblies[i].Position += Vector3.Transform(Vector3.UnitZ, assemblies[i].Rotation) * speed;
             }
         }
 
@@ -66,7 +64,7 @@ namespace Assembly
         }
 
         private Vector3 RandomPos() {
-            return new Vector3(Random.random.Next((int)minBoundary, (int)maxBoundary), Random.random.Next((int)minBoundary, (int)maxBoundary), Random.random.Next((int)minBoundary, (int)maxBoundary));
+            return new Vector3(Random.Range((int)minBoundary, (int)maxBoundary), Random.Range((int)minBoundary, (int)maxBoundary), Random.Range((int)minBoundary, (int)maxBoundary));
         }
     }
 }

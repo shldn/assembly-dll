@@ -20,5 +20,9 @@ namespace Assembly
 			);
 
 		} // End of RandomRotation().
+
+        public static int Range(int min, int max) {
+            return random.Next(min, max);
+        }
 	}
 }
