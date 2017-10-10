@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Assembly
+namespace EGL
 {
     public class Random
     {
@@ -24,5 +24,5 @@ namespace Assembly
         public static int Range(int min, int max) {
             return random.Next(min, max);
         }
-	}
+	} // End of Range().
 }

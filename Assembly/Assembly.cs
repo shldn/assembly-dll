@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace Assembly
+namespace EGL
 {
     public class Assembly
     {
@@ -14,9 +14,10 @@ namespace Assembly
         private Vector3 _position;
         private Quaternion _rotation;
 
-		private Vector3 localCenterOfMass = Vector3.Zero;
-		public Vector3 LocalCenterOfMass { get { return localCenterOfMass; } }
-		public Vector3 WorldCenterOfMass { get { return Position + Vector3.Transform(localCenterOfMass, Rotation); } }
+		private Vector3 localCenterOfMassOffset = Vector3.Zero; public Vector3 LocalCenterOfMassOffset { get { return localCenterOfMassOffset; } }
+
+		private Vector3 velocity = Vector3.Zero; public Vector3 Velocity { get { return velocity; } }
+		private Vector3 angularVelocity = Vector3.Zero; public Vector3 AngularVelocity { get { return angularVelocity; } }
 
         // locks
         object posLock = new object();
@@ -27,6 +28,8 @@ namespace Assembly
         public Vector3 Position { get { lock (posLock) { return _position; } } set { lock (posLock) { _position = value; } } }
         public Quaternion Rotation { get { lock (rotLock) { return _rotation; } } set { lock (rotLock) { _rotation = value; } } }
 
+		private Colony colony = null; public Colony MyColony { get { return colony; } }
+
         // data structures
         private List<Node> nodesList = new List<Node>(); public List<Node> NodesList { get { return nodesList; } }
 		private Dictionary<Triplet, Node> nodesDict = new Dictionary<Triplet, Node>();
@@ -36,7 +39,9 @@ namespace Assembly
 		
 
 		// Ctor.
-        public Assembly(Vector3 pos, int numNodes) {
+        public Assembly(Colony colony, Vector3 pos, int numNodes) {
+			this.colony = colony;
+
             _id = idCounter++;
             _position = pos;
 			_rotation = Random.RandomRotation();
@@ -78,7 +83,7 @@ namespace Assembly
 
 					int randomStartDir = Random.random.Next(12);
 					for(int j = 0; j < nodesList.Count; j++){
-						int wrappedDirIndex = (randomStartNode + j) % nodesList.Count;
+						int wrappedDirIndex = (randomStartDir + j) % 12;
 						int curDir = wrappedDirIndex % 12;
 						newNodePos = rootNode.LocalHexPos + HexUtilities.Adjacent(curDir);
 						if(!nodesDict.ContainsKey(newNodePos)){
@@ -103,13 +108,31 @@ namespace Assembly
 		} // End of AddNode().
 
 		private void CalculateCenterOfMass(){
-			localCenterOfMass = Vector3.Zero;
+			localCenterOfMassOffset = Vector3.Zero;
 			for(int i = 0; i < nodesList.Count; i++)
-				localCenterOfMass += nodesList[i].LocalHexPos.ToVector3();
+				localCenterOfMassOffset += nodesList[i].LocalUnitPos;
 
-			localCenterOfMass /= nodesList.Count;
+			localCenterOfMassOffset /= nodesList.Count;
 		} // End of CalculateCenterOfMass().
 
+
+		public void Update(){
+			Position += velocity * colony.TimeStep;
+            Rotation *= Quaternion.CreateFromYawPitchRoll(angularVelocity.X * colony.TimeStep, angularVelocity.Y * colony.TimeStep, angularVelocity.Z * colony.TimeStep);
+		} // End of Update().
+
+
+		public void ApplyTorque(float x, float y, float z){
+			angularVelocity.X += x;
+			angularVelocity.Y += y;
+			angularVelocity.Z += z;
+		} // End of ApplyTorque().
+
+		public void ApplyForce(float x, float y, float z){
+			velocity.X += x;
+			velocity.Y += y;
+			velocity.Z += z;
+		} // End of ApplyTorque().
 
 		/*
 		// Remove a specific node from the Assembly.

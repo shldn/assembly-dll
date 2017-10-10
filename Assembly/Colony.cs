@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 
-namespace Assembly
+namespace EGL
 {
     public class Colony
     {
-        float minBoundary = -10;
-        float maxBoundary = 10;
-        List<Assembly> assemblies = new List<Assembly>();
+        private float minBoundary = -10;
+        private float maxBoundary = 10;
+        private List<Assembly> assemblies = new List<Assembly>(); public List<Assembly> Assemblies { get { return assemblies; } }
 
         // simulation control
-        static bool killAll = false;
-        bool running = true;
-        public volatile float speed = 0.001f;
+        private static bool killAll = false;
+        private bool running = true;
+		private float lifetime = 0f; public float Lifetime { get { return lifetime; } }
+		public float TimeStep { get { return sleepMillis * 0.001f; } }
 
         // frame rate control
-        int sleepMillis = 10;
+        private int sleepMillis = 10;
 
         public static Colony Create(int num) {
             // Create the new Colony
@@ -36,35 +37,39 @@ namespace Assembly
 
         private Colony(int num) {
             Console.WriteLine("Creating a colony " + num);
-            int numNodes = Random.Range(3, 8);
             for (int i = 0; i < num; ++i) {
-                assemblies.Add(new Assembly(RandomPos(), numNodes));
+				//int numNodes = Random.Range(3, 8);
+				int numNodes = 10;
+                assemblies.Add(new Assembly(this, RandomPos(), numNodes));
             }
         }
 
         private void UpdateLoop() {
             while (running && !killAll) {
                 Update();
+				lifetime += sleepMillis * 0.001f;
                 Thread.Sleep(sleepMillis);
             }
-        }
+        } // End of UpdateLoop().
 
         void Update() {
-            for (int i = 0; i < assemblies.Count; ++i) {
-                assemblies[i].Position += Vector3.Transform(Vector3.UnitZ, assemblies[i].Rotation) * speed;
-            }
-        }
+            for (int i = 0; i < assemblies.Count; ++i)
+                assemblies[i].Update();
+        } // End of Update().
+		
+        private Vector3 RandomPos() {
+            return new Vector3(Random.Range((int)minBoundary, (int)maxBoundary), Random.Range((int)minBoundary, (int)maxBoundary), Random.Range((int)minBoundary, (int)maxBoundary));
+        } // End of RandomPos().
 
+		/*
         public List<Tuple<int,Vector3>> GetPositions() {
             List<Tuple<int, Vector3>> positions = new List<Tuple<int, Vector3>>();
             for (int i = 0; i < assemblies.Count; ++i) {
                 positions.Add(new Tuple<int,Vector3>(assemblies[i].Id,assemblies[i].Position));
             }
             return positions;
-        }
-
-        private Vector3 RandomPos() {
-            return new Vector3(Random.Range((int)minBoundary, (int)maxBoundary), Random.Range((int)minBoundary, (int)maxBoundary), Random.Range((int)minBoundary, (int)maxBoundary));
-        }
-    }
+        } // End of GetPositions().
+		*/
+		
+    } // End of Colony.
 }

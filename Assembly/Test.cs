@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Assembly
+namespace EGL
 {
     public class Test
     {
