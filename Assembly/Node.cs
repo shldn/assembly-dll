@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace Assembly
 {
@@ -14,6 +15,9 @@ namespace Assembly
 		private List<Node> neighborsList = new List<Node>(); public List<Node> NeighborsList { get { return neighborsList; } }
 		// Key is the direction from us to the neighbor.
 		private Dictionary<Triplet, Node> neighborsDict = new Dictionary<Triplet, Node>();
+
+		public Vector3 WorldPosition { get { return assembly.Position + Vector3.Transform(localHexPos.ToVector3(), assembly.Rotation); } }
+
 
 		public void AssignNeighbor(Node newNeighbor){
 			neighborsList.Add(newNeighbor);
